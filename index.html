@@ -514,7 +514,6 @@
 
     imgs.forEach((img, idx) => {
       setTimeout(() => {
-        img.src = img.getAttribute('data-src');
         img.addEventListener('error', () => {
           img.style.background = 'linear-gradient(135deg,#ffd1dc,#ffe9ee)';
           img.alt = '💕';
