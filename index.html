@@ -507,26 +507,25 @@
   });
 
   function showMemories(){
-    memoriesSection.classList.remove('hidden');
-    memoriesSection.classList.add('fade-in');
-    const imgs = photoGrid.querySelectorAll('img');
-    let loadedCount = 0;
+  memoriesSection.classList.remove('hidden');
+  memoriesSection.classList.add('fade-in');
+  const imgs = photoGrid.querySelectorAll('img');
+  let loadedCount = 0;
 
-    imgs.forEach((img, idx) => {
-      setTimeout(() => {
-        img.addEventListener('error', () => {
-          img.style.background = 'linear-gradient(135deg,#ffd1dc,#ffe9ee)';
-          img.alt = '💕';
-        });
-        img.classList.add('show');
-        loadedCount++;
-        if (loadedCount === imgs.length){
-          setTimeout(showFinalCard, 1200);
-        }
-      }, idx * 400);
-    });
-  }
-
+  imgs.forEach((img, idx) => {
+    setTimeout(() => {
+      img.addEventListener('error', () => {
+        img.style.background = 'linear-gradient(135deg,#ffd1dc,#ffe9ee)';
+        img.alt = '💕';
+      });
+      img.classList.add('show');
+      loadedCount++;
+      if (loadedCount === imgs.length){
+        setTimeout(showFinalCard, 1200);
+      }
+    }, idx * 400);
+  });
+}
   function showFinalCard(){
     finalCard.classList.remove('hidden');
     finalCard.classList.add('fade-in');
