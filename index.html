@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Do You Miss Me? ❤️</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+  html,body {
+    width:100%; min-height:100%;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    overflow-x:hidden;
+    background: linear-gradient(135deg, #ffafbd, #ffc3a0, #ff9a9e, #fecfef);
+    background-size: 400% 400%;
+    animation: bgShift 18s ease infinite;
+    color:#5a2a3a;
+    transition: background 1.2s ease;
+  }
+  body.warm {
+    background: linear-gradient(135deg, #ff6f91, #ff9671, #ff7eb3, #ffb86b);
+    background-size: 400% 400%;
+    animation: bgShift 14s ease infinite;
+  }
+  @keyframes bgShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  #heart-canvas, #sparkle-canvas {
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    pointer-events:none; z-index:1;
+  }
+
+  .container {
+    position:relative; z-index:2;
+    display:flex; flex-direction:column; align-items:center;
+    width:100%; min-height:100vh;
+    padding: 30px 16px 60px;
+  }
+
+  .glass-card {
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    background: rgba(255,255,255,0.28);
+    border: 1px solid rgba(255,255,255,0.45);
+    border-radius: 28px;
+    box-shadow: 0 8px 32px rgba(150, 40, 80, 0.25);
+    padding: 36px 24px;
+    max-width: 520px;
+    width: 100%;
+    text-align: center;
+    transition: transform 0.6s ease, padding 0.6s ease;
+    position: relative;
+  }
+
+  #screen1 { margin-top: 8vh; }
+
+  .question {
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color:#7a1f3d;
+    text-shadow: 0 2px 8px rgba(255,255,255,0.4);
+  }
+
+  .btn-row {
+    display:flex;
+    justify-content:center;
+    gap: 24px;
+    position: relative;
+    height: 70px;
+  }
+
+  .btn {
+    border:none;
+    border-radius: 50px;
+    padding: 14px 28px;
+    font-size: 1.05rem;
+    font-weight:600;
+    cursor:pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    user-select:none;
+    -webkit-user-select:none;
+  }
+
+  .yes-btn {
+    background: linear-gradient(135deg,#ff5e8a,#ff8aa3);
+    color:#fff;
+    box-shadow: 0 6px 18px rgba(255,70,110,0.5);
+  }
+  .yes-btn:hover { transform: scale(1.08); }
+  .yes-btn:active { transform: scale(0.96); }
+
+  .no-btn {
+    background: linear-gradient(135deg,#c9c9c9,#e6e6e6);
+    color:#6a4a55;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+    position: absolute;
+    left: 50%;
+    transform: translateX(60px);
+    transition: top 0.35s cubic-bezier(.2,.9,.3,1.2), left 0.35s cubic-bezier(.2,.9,.3,1.2), transform 0.35s cubic-bezier(.2,.9,.3,1.2);
+  }
+
+  .hidden { display:none !important; }
+  .fade-out {
+    animation: fadeOutDown 0.6s ease forwards;
+  }
+  @keyframes fadeOutDown {
+    to { opacity:0; transform: translateY(20px) scale(0.95); }
+  }
+  .fade-in {
+    animation: fadeInUp 0.9s ease forwards;
+    opacity:0;
+  }
+  @keyframes fadeInUp {
+    from { opacity:0; transform: translateY(30px); }
+    to { opacity:1; transform: translateY(0); }
+  }
+
+  .enlarge { transform: scale(1.04); }
+
+  #message-text {
+    font-size: 1.15rem;
+    line-height:1.7;
+    color:#7a1f3d;
+    white-space: pre-wrap;
+    min-height: 160px;
+    text-align:left;
+  }
+
+  .typewriter-cursor::after {
+    content: '|';
+    animation: blink 0.8s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity:0; } }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight:700;
+    color:#7a1f3d;
+    margin: 50px 0 20px;
+    text-align:center;
+    text-shadow: 0 2px 8px rgba(255,255,255,0.4);
+  }
+
+  .photo-grid {
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    width:100%;
+    max-width: 520px;
+  }
+  @media (min-width: 700px) {
+    .photo-grid { grid-template-columns: repeat(4, 1fr); max-width: 900px; }
+  }
+  .photo-grid img {
+    width:100%;
+    aspect-ratio: 1/1;
+    object-fit:cover;
+    border-radius: 18px;
+    box-shadow: 0 8px 20px rgba(120,30,60,0.3);
+    opacity:0;
+    transform: scale(0.85);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    cursor:pointer;
+  }
+  .photo-grid img.show {
+    animation: photoIn 0.7s ease forwards;
+  }
+  @keyframes photoIn {
+    to { opacity:1; transform: scale(1); }
+  }
+  .photo-grid img:hover {
+    transform: scale(1.07);
+    box-shadow: 0 12px 28px rgba(120,30,60,0.45);
+  }
+
+  #final-card {
+    max-width: 600px;
+    margin-top: 50px;
+    text-align:left;
+  }
+  #final-text {
+    font-size: 1.05rem;
+    line-height:1.8;
+    color:#7a1f3d;
+    white-space: pre-wrap;
+    min-height: 200px;
+  }
+
+  .center-heart {
+    text-align:center;
+    margin: 30px 0;
+  }
+  .beating-heart {
+    font-size: 4.5rem;
+    display:inline-block;
+    animation: heartbeat 1.4s ease-in-out infinite;
+    text-shadow: 0 0 25px rgba(255,90,130,0.9), 0 0 50px rgba(255,90,130,0.6);
+  }
+  @keyframes heartbeat {
+    0%,100% { transform: scale(1); }
+    15% { transform: scale(1.25); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.18); }
+    60% { transform: scale(1); }
+  }
+
+  .final-love-text {
+    text-align:center;
+    font-size: 1.6rem;
+    font-weight:700;
+    color:#7a1f3d;
+    margin: 10px 0 40px;
+    opacity:0;
+  }
+
+  .signature {
+    text-align:center;
+    margin: 40px auto 20px;
+    max-width: 600px;
+    color:#5a2a3a;
+    font-size: 0.95rem;
+    line-height:1.8;
+    padding: 0 16px;
+  }
+  .signature .line {
+    color:#a3375a;
+    letter-spacing:1px;
+  }
+  .signature strong { color:#7a1f3d; }
+
+  @media (max-width: 480px) {
+    .question { font-size: 1.4rem; }
+    .glass-card { padding: 28px 18px; }
+    .final-love-text { font-size: 1.3rem; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="heart-canvas"></canvas>
+<canvas id="sparkle-canvas"></canvas>
+
+<div class="container">
+
+  <div class="glass-card" id="screen1">
+    <div class="question">🥺❤️ Do you miss me?</div>
+    <div class="btn-row" id="btnRow">
+      <button class="btn yes-btn" id="yesBtn">❤️ YES</button>
+      <button class="btn no-btn" id="noBtn">💔 NO</button>
+    </div>
+  </div>
+
+  <div class="glass-card hidden" id="messageCard" style="margin-top:40px;">
+    <div id="message-text"></div>
+  </div>
+
+  <div id="memoriesSection" class="hidden" style="margin-top:10px; width:100%; display:flex; flex-direction:column; align-items:center;">
+    <div class="section-title">❤️ Our Beautiful Memories</div>
+    <div class="photo-grid" id="photoGrid">
+      <img data-src="images/photo1.jpg" alt="memory 1">
+      <img data-src="images/photo2.jpg" alt="memory 2">
+      <img data-src="images/photo3.jpg" alt="memory 3">
+      <img data-src="images/photo4.jpg" alt="memory 4">
+    </div>
+  </div>
+
+  <div class="glass-card hidden" id="final-card">
+    <div id="final-text"></div>
+  </div>
+
+  <div class="center-heart hidden" id="centerHeartWrap">
+    <span class="beating-heart">❤️</span>
+  </div>
+
+  <div class="final-love-text hidden" id="finalLoveText">I Love You So Much More ❤️</div>
+
+  <div class="signature hidden" id="signature">
+    <div class="line">━━━━━━━━━━━━━━━━━━━━</div>
+    <div>Made with all my love ❤️</div>
+    <div>From: <strong>❤️ Zhejie Matias Manibog</strong></div>
+    <div>To: <strong>❤️ My Bbygirl, My Wifey Angeline Salamanca</strong></div>
+    <div>Forever and Always.</div>
+    <div class="line">━━━━━━━━━━━━━━━━━━━━</div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Floating Hearts + Sparkles Background ---------- */
+  const heartCanvas = document.getElementById('heart-canvas');
+  const sparkleCanvas = document.getElementById('sparkle-canvas');
+  const hctx = heartCanvas.getContext('2d');
+  const sctx = sparkleCanvas.getContext('2d');
+
+  function resizeCanvases(){
+    [heartCanvas, sparkleCanvas].forEach(c => {
+      c.width = window.innerWidth;
+      c.height = window.innerHeight;
+    });
+  }
+  resizeCanvases();
+  window.addEventListener('resize', resizeCanvases);
+
+  let hearts = [];
+  let sparkles = [];
+  let extraBurst = [];
+
+  function rand(min,max){ return Math.random()*(max-min)+min; }
+
+  function spawnHeart(){
+    hearts.push({
+      x: rand(0, heartCanvas.width),
+      y: heartCanvas.height + rand(0,100),
+      size: rand(14, 32),
+      speed: rand(0.4, 1.3),
+      drift: rand(-0.5, 0.5),
+      opacity: rand(0.4, 0.9),
+      angle: rand(0, Math.PI*2)
+    });
+  }
+  for (let i=0;i<18;i++) spawnHeart();
+
+  function spawnSparkle(){
+    sparkles.push({
+      x: rand(0, sparkleCanvas.width),
+      y: rand(0, sparkleCanvas.height),
+      size: rand(1.5, 3.5),
+      opacity: rand(0.2, 1),
+      twinkleSpeed: rand(0.02, 0.06),
+      phase: rand(0, Math.PI*2)
+    });
+  }
+  for (let i=0;i<60;i++) spawnSparkle();
+
+  function drawHeartShape(ctx, x, y, size, opacity){
+    ctx.save();
+    ctx.globalAlpha = opacity;
+    ctx.translate(x,y);
+    ctx.beginPath();
+    const s = size/16;
+    ctx.moveTo(0, 4*s);
+    ctx.bezierCurveTo(0, 0, -8*s, 0, -8*s, 4*s);
+    ctx.bezierCurveTo(-8*s, 8*s, 0, 12*s, 0, 16*s);
+    ctx.bezierCurveTo(0, 12*s, 8*s, 8*s, 8*s, 4*s);
+    ctx.bezierCurveTo(8*s, 0, 0, 0, 0, 4*s);
+    ctx.closePath();
+    ctx.fillStyle = '#ff6f91';
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function animate(){
+    hctx.clearRect(0,0,heartCanvas.width, heartCanvas.height);
+    sctx.clearRect(0,0,sparkleCanvas.width, sparkleCanvas.height);
+
+    hearts.forEach(h => {
+      h.y -= h.speed;
+      h.x += Math.sin(h.angle + h.y*0.01) * h.drift;
+      drawHeartShape(hctx, h.x, h.y, h.size, h.opacity);
+    });
+    hearts = hearts.filter(h => h.y > -50);
+    while (hearts.length < 18) spawnHeart();
+
+    extraBurst.forEach(h => {
+      h.y -= h.speed;
+      h.x += h.vx;
+      h.opacity -= 0.004;
+      drawHeartShape(hctx, h.x, h.y, h.size, Math.max(h.opacity,0));
+    });
+    extraBurst = extraBurst.filter(h => h.opacity > 0 && h.y > -50);
+
+    sparkles.forEach(s => {
+      s.phase += s.twinkleSpeed;
+      const o = (Math.sin(s.phase)+1)/2 * s.opacity;
+      sctx.save();
+      sctx.globalAlpha = o;
+      sctx.fillStyle = '#fff';
+      sctx.beginPath();
+      sctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+      sctx.fill();
+      sctx.restore();
+    });
+
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  function burstHearts(count){
+    for (let i=0;i<count;i++){
+      extraBurst.push({
+        x: rand(0, heartCanvas.width),
+        y: heartCanvas.height + rand(0,60),
+        size: rand(16, 38),
+        speed: rand(1.5, 4),
+        vx: rand(-1.5, 1.5),
+        opacity: rand(0.6, 1)
+      });
+    }
+  }
+
+  /* ---------- NO Button Evasion ---------- */
+  const screen1 = document.getElementById('screen1');
+  const btnRow = document.getElementById('btnRow');
+  const noBtn = document.getElementById('noBtn');
+  const yesBtn = document.getElementById('yesBtn');
+
+  function moveNoBtn(){
+    const cardRect = screen1.getBoundingClientRect();
+    const rowRect = btnRow.getBoundingClientRect();
+    const btnW = noBtn.offsetWidth || 100;
+    const btnH = noBtn.offsetHeight || 50;
+
+    const padding = 20;
+    const maxX = cardRect.width - btnW - padding;
+    const maxY = cardRect.height - btnH - padding;
+    const minX = padding;
+    const minY = padding;
+
+    let newX = rand(minX, Math.max(minX, maxX));
+    let newY = rand(minY, Math.max(minY, maxY));
+
+    // avoid overlapping yes button
+    const yesRect = yesBtn.getBoundingClientRect();
+    const yesLocalX = yesRect.left - cardRect.left;
+    const yesLocalY = yesRect.top - cardRect.top;
+
+    let attempts = 0;
+    while (
+      Math.abs(newX - yesLocalX) < (btnW + yesRect.width)/1.5 &&
+      Math.abs(newY - yesLocalY) < (btnH + yesRect.height)/1.5 &&
+      attempts < 10
+    ){
+      newX = rand(minX, Math.max(minX, maxX));
+      newY = rand(minY, Math.max(minY, maxY));
+      attempts++;
+    }
+
+    noBtn.style.position = 'fixed';
+    noBtn.style.left = (cardRect.left + newX) + 'px';
+    noBtn.style.top = (cardRect.top + newY) + 'px';
+    noBtn.style.transform = 'none';
+  }
+
+  // Initialize fixed position after layout
+  window.addEventListener('load', () => {
+    setTimeout(moveNoBtn, 100);
+  });
+
+  noBtn.addEventListener('mouseenter', moveNoBtn);
+  noBtn.addEventListener('touchstart', function(e){
+    e.preventDefault();
+    moveNoBtn();
+  }, {passive:false});
+  noBtn.addEventListener('click', function(e){
+    e.preventDefault();
+    moveNoBtn();
+  });
+
+  /* ---------- YES button flow ---------- */
+  const messageCard = document.getElementById('messageCard');
+  const messageTextEl = document.getElementById('message-text');
+  const memoriesSection = document.getElementById('memoriesSection');
+  const photoGrid = document.getElementById('photoGrid');
+  const finalCard = document.getElementById('final-card');
+  const finalTextEl = document.getElementById('final-text');
+  const centerHeartWrap = document.getElementById('centerHeartWrap');
+  const finalLoveText = document.getElementById('finalLoveText');
+  const signature = document.getElementById('signature');
+
+  function typeWriter(el, text, speed, callback){
+    el.classList.add('typewriter-cursor');
+    let i = 0;
+    function tick(){
+      if (i <= text.length){
+        el.textContent = text.slice(0, i);
+        i++;
+        setTimeout(tick, speed);
+      } else {
+        el.classList.remove('typewriter-cursor');
+        if (callback) callback();
+      }
+    }
+    tick();
+  }
+
+  yesBtn.addEventListener('click', function(){
+    screen1.classList.add('fade-out');
+    burstHearts(40);
+    document.body.classList.add('warm');
+
+    setTimeout(() => {
+      screen1.classList.add('hidden');
+      messageCard.classList.remove('hidden');
+      messageCard.classList.add('fade-in', 'enlarge');
+
+      const msg = "I love you so much. ❤️ You mean everything to me. I'm always thinking of you. Thank you for loving me too. I can't wait to see you again. You are my happiness. 🥹❤️";
+      typeWriter(messageTextEl, msg, 45, () => {
+        setTimeout(showMemories, 600);
+      });
+    }, 650);
+  });
+
+  function showMemories(){
+    memoriesSection.classList.remove('hidden');
+    memoriesSection.classList.add('fade-in');
+    const imgs = photoGrid.querySelectorAll('img');
+    let loadedCount = 0;
+
+    imgs.forEach((img, idx) => {
+      setTimeout(() => {
+        img.src = img.getAttribute('data-src');
+        img.addEventListener('error', () => {
+          img.style.background = 'linear-gradient(135deg,#ffd1dc,#ffe9ee)';
+          img.alt = '💕';
+        });
+        img.classList.add('show');
+        loadedCount++;
+        if (loadedCount === imgs.length){
+          setTimeout(showFinalCard, 1200);
+        }
+      }, idx * 400);
+    });
+  }
+
+  function showFinalCard(){
+    finalCard.classList.remove('hidden');
+    finalCard.classList.add('fade-in');
+
+    const finalMsg =
+"❤️ One Last Thing... ❤️\n\n" +
+"My Bbygirl, My Wifey,\n\n" +
+"Thank you for loving me, supporting me, and staying by my side through everything.\n\n" +
+"Every memory we've made together is a treasure I'll always keep in my heart.\n\n" +
+"No matter the distance or challenges, my love for you will never change.\n\n" +
+"You are my happiness, my peace, my safe place, and the best thing in my life.\n\n" +
+"Every day, I fall in love with you more.\n\n" +
+"I promise to always choose you.\n\n" +
+"I love your smile. I love your laugh. I love your voice. I love your heart.\n\n" +
+"And most of all…\n\n" +
+"I love you so much more. ❤️🥹\n\n" +
+"Forever yours,\n" +
+"❤️ Zhejie Matias Manibog ❤️\n\n" +
+"To my Bbygirl, my Wifey,\n" +
+"❤️ Angeline Salamanca ❤️\n\n" +
+"Thank you for being the most beautiful part of my life.\n" +
+"❤️ Forever & Always ❤️";
+
+    typeWriter(finalTextEl, finalMsg, 22, () => {
+      setTimeout(finalAnimation, 800);
+    });
+  }
+
+  function finalAnimation(){
+    burstHearts(60);
+    centerHeartWrap.classList.remove('hidden');
+    centerHeartWrap.classList.add('fade-in');
+
+    setTimeout(() => {
+      finalLoveText.classList.remove('hidden');
+      finalLoveText.style.animation = 'fadeInUp 1.2s ease forwards';
+    }, 800);
+
+    setTimeout(() => {
+      signature.classList.remove('hidden');
+      signature.classList.add('fade-in');
+    }, 2200);
+  }
+
+})();
+</script>
+
+</body>
+</html>
